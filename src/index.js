@@ -2,12 +2,14 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Routes from './Routes';
 import GlobalStyle from './styles/GlobalStyle';
-import './styles/reset.scss';
-
+import { ThemeProvider } from 'styled-components';
+import theme from './styles/theme';
 ReactDOM.render(
   <>
     <GlobalStyle />
-    <Routes />
+    <ThemeProvider theme={theme}>
+      <Routes />
+    </ThemeProvider>
   </>,
   document.getElementById('root')
 );
