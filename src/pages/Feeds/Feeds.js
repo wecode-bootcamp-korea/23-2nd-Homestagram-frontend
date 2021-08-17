@@ -1,11 +1,11 @@
 import React from 'react';
-import WriteFeed from '../../component/WriteFeed/WriteFeed';
+// import WriteFeed from '../../component/WriteFeed/WriteFeed';
 
 const Feeds = () => {
   return (
     <div>
       Feeds
-      <WriteFeed />
+      {/* <WriteFeed /> */}
     </div>
   );
 };
