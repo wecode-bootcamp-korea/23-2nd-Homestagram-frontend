@@ -1,6 +1,7 @@
 import React from 'react';
+import KakaoLogin from './KakaoLogin/KakaoLogin';
 
 const SignPage = () => {
-  return <div>회원가입/로그인</div>;
+  return <KakaoLogin />;
 };
 export default SignPage;
