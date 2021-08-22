@@ -12,20 +12,20 @@ const Main = () => {
   }, []);
 
   const getData = () => {
-    // axios
-    //   .get('http://172.30.1.49:8000/postings')
-    //   .then(response => {
-    //     console.log(response.data.POSTING_FEED);
-    //     setFeedData(response.data.POSTING_FEED);
-    //   })
-    //   .catch(err => console.error(err));
     axios
-      .get('./data/PostedData.json')
+      .get('http://10.58.3.119:8000/postings/feed/public?page=1')
       .then(response => {
-        console.log(response);
-        setFeedData(response.data);
+        console.log(response.data.POSTING_FEED);
+        setFeedData(response.data.POSTING_FEED);
       })
       .catch(err => console.error(err));
+    // axios
+    //   .get('./data/PostedData.json')
+    //   .then(response => {
+    //     console.log(response);
+    //     setFeedData(response.data);
+    //   })
+    //   .catch(err => console.error(err));
   };
 
   return (

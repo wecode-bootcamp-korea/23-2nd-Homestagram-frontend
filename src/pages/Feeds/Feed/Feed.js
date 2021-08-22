@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import FeedName from './FeedName/FeedName';
 import PostedTag from './postedTags/PostedTag';
 import Comment from './Commet/Comment';
+import axios from 'axios';
 
 const Feed = ({ feedInfo }) => {
   const {
@@ -23,6 +24,24 @@ const Feed = ({ feedInfo }) => {
   const [bookmark, setbookmark] = useState(false);
   const stop = e => {
     e.stopPropagation();
+  };
+  console.log(feedInfo.feedId);
+  // useEffect(() => {
+  //   axios
+  //     .post(`http://10.58.3.119:8000/postings/${feedInfo.feedId}/bookmark`)
+  //     .then(res => {
+  //       console.log(res);
+  //     })
+  //     .catch(err => console.log(err));
+  // }, [bookmark]);
+
+  const clickedBookmark = () => {
+    axios
+      .post(`http://10.58.3.119:8000/postings/${feedInfo.feedId}/bookmark`)
+      .then(res => {
+        setbookmark(prev => !prev);
+      })
+      .catch(err => console.log(err));
   };
 
   const aboutProduct = ({ target }) => {
@@ -68,11 +87,7 @@ const Feed = ({ feedInfo }) => {
       <ContentAndBookmark>
         <Content>{content}</Content>
         <Bookmark
-          onClick={() =>
-            setbookmark(prev => {
-              return !prev;
-            })
-          }
+          onClick={clickedBookmark}
           src={
             bookmark ? './images/checked_bookmarks.png' : './images/ribbon.png'
           }

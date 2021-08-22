@@ -1,0 +1,16 @@
+{
+  "RESPONSE": [
+    {
+      "price": 15000,
+      "date": "2021-08-25",
+      "product": "침대",
+      "product_id": 1
+    },
+    {
+      "price": 20000,
+      "date": "2021-08-25",
+      "product": "침대",
+      "product_id": 1
+    }
+  ]
+}
