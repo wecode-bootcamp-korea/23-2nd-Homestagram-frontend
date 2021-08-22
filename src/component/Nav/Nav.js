@@ -47,7 +47,7 @@ const Nav = () => {
       scope: 'profile_nickname , account_email',
       persistAccessToken: false,
       success: async function (response) {
-        const res = await axios.post('http://10.58.0.85:8000/users/signin', {
+        const res = await axios.post('http://10.58.3.119:8000/users/signin', {
           access_token: response.access_token,
         });
         localStorage.setItem('token', res.data.token);
@@ -65,6 +65,7 @@ const Nav = () => {
         });
       },
       fail: function (error) {
+        console.log(error);
         alert('로그인에 실패했습니다.');
       },
     });
@@ -82,7 +83,7 @@ const Nav = () => {
       setIsSignup(false);
 
       const options = axios.post(
-        `http://10.58.0.85:8000/users/${userInfo.userId}/nickname`,
+        `http://10.58.3.119:8000/users/${userInfo.userId}/nickname`,
         { nickname: userInfo.nickname }
       );
       console.log(options);

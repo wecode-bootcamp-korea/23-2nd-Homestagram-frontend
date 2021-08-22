@@ -1,0 +1,14 @@
+{
+  "LIST": [
+    {
+      "posting_id": 23,
+      "posting_username": "Jun",
+      "posting_image_url": "https://homestagram.s3.ap-northeast-2.amazonaws.com/posting_images/1.jpg"
+    },
+    {
+      "posting_id": 24,
+      "posting_username": "Jun",
+      "posting_image_url": "https://homestagram.s3.ap-northeast-2.amazonaws.com/posting_images/10.jpg"
+    }
+  ]
+}
