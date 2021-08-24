@@ -1,6 +1,7 @@
 import React from 'react';
 
 const MyPage = () => {
-  return <div>내정보</div>;
+  return;
 };
+
 export default MyPage;

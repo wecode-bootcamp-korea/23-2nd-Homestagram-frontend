@@ -1,0 +1,25 @@
+{
+  "product_title": "침대100",
+  "product_price": 4598724,
+  "url": "https://thumbnail.10x10.co.kr/webimage/image/basic600/272/B002721785-1.jpg?cmd=thumb&w=400&h=400&fit=true&ws=false",
+  "product_images": [
+    "https://thumbnail.10x10.co.kr/webimage/image/basic600/272/B002721785-1.jpg?cmd=thumb&w=400&h=400&fit=true&ws=false",
+    "https://www.costco.co.kr/medias/sys_master/images/hd7/hee/11992340234270.jpg",
+    "https://thumbnail.10x10.co.kr/webimage/image/basic600/272/B002721785-1.jpg?cmd=thumb&w=400&h=400&fit=true&ws=false",
+    "https://www.costco.co.kr/medias/sys_master/images/hd7/hee/11992340234270.jpg"
+  ],
+  "product_option": [
+    {
+      "color_name": "검은색",
+      "product_stocks": 100
+    },
+    {
+      "color_name": "회색",
+      "product_stocks": 100
+    },
+    {
+      "color_name": "흰색",
+      "product_stocks": 100
+    }
+  ]
+}
