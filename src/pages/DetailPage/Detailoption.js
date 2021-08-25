@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router';
 import { flexBox } from '../../styles/Mixin';
 import styled from 'styled-components';
 
 const Detailoption = ({ price, option }) => {
+  const history = useHistory();
   const [list, setList] = useState([]);
 
   const changeOption = e => {
@@ -41,7 +43,7 @@ const Detailoption = ({ price, option }) => {
   };
 
   const goToPayment = e => {
-    this.props.history.push('/orderpage');
+    history.push('/orderpage');
   };
 
   const total =

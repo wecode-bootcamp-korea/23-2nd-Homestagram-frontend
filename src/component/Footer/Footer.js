@@ -60,6 +60,7 @@ const Footer = () => {
     </Wrapper>
   );
 };
+
 export default Footer;
 
 const Wrapper = styled.footer`
