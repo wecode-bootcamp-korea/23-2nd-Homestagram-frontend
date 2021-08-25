@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import Draggable from 'react-draggable';
-import Modal from '../../../component/Modal/Modal';
+import Modal from '../../../component/Nav/Modal/Modal';
 import styled from 'styled-components';
+import axios from 'axios';
 
-const DraggableButtonInCard = () => {
+const DraggableButtonInCard = ({ url, handleButtonData, buttonData }) => {
   const [position, setPosition] = useState({
     id: 0,
     xx: 0,
     yy: 0,
-    productId: 0,
+    product_id: 0,
   });
   const [plusAndSubmit, setPlusAndSubmit] = useState(true);
-  const [buttonData, setButtonData] = useState([]);
   const [purchaseProduct, setPurchaseProduct] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState([
     {
@@ -22,13 +22,15 @@ const DraggableButtonInCard = () => {
     },
   ]);
   const [targetbutton, setTargetbutton] = useState(0);
+  const [productsListModal, setProductsListModal] = useState(false);
 
   useEffect(() => {
-    fetch('./data/purchaseProduct.json')
-      .then(res => res.json())
-      .then(dates => {
-        setPurchaseProduct(dates);
-      });
+    axios
+      .get('http://10.58.6.86:8000/products')
+      .then(response => {
+        setPurchaseProduct(response.data.list);
+      })
+      .catch(err => console.error(err));
   }, []);
 
   const dragButton = data => {
@@ -43,7 +45,7 @@ const DraggableButtonInCard = () => {
 
   const cancelPlusButton = ({ target }) => {
     if (target.name === 'totalCencel') {
-      setButtonData([]);
+      handleButtonData(0);
       setPlusAndSubmit(true);
     } else {
       if (target.name === 'goBack') {
@@ -53,7 +55,7 @@ const DraggableButtonInCard = () => {
         return {
           ...prev,
           id: position.id - 1,
-          productId: 0,
+          product_id: 0,
         };
       });
       setPlusAndSubmit(!plusAndSubmit);
@@ -70,9 +72,7 @@ const DraggableButtonInCard = () => {
     } else if (position.xx === 0 && position.yy === 0) {
       alert('태그버튼을 옮겨주세요');
     } else {
-      setButtonData(prev => {
-        return [...prev, position];
-      });
+      handleButtonData(position);
       setPosition(prev => {
         return { ...prev, xx: 0, yy: 0 };
       });
@@ -87,7 +87,7 @@ const DraggableButtonInCard = () => {
       });
       setSelectedProduct(
         purchaseProduct.filter(({ id }) => {
-          return id === targetProduct[0].productId;
+          return id === targetProduct[0].product_id;
         })
       );
     }
@@ -98,53 +98,60 @@ const DraggableButtonInCard = () => {
     e.stopPropagation();
   };
 
-  const button = buttonData.map(({ id, xx, yy, productId }) => {
-    return (
-      <div onClick={stop}>
-        <Draggable disabled={true} key={id} defaultPosition={{ x: xx, y: yy }}>
-          <Button id={id} onClick={aboutProduct}>
-            +
-          </Button>
-        </Draggable>
-        {id === Number(targetbutton) && (
+  const button =
+    buttonData &&
+    buttonData.map(({ id, xx, yy, product_id }) => {
+      return (
+        <div onClick={stop} key={id + xx}>
           <Draggable
             disabled={true}
-            defaultPosition={{ x: xx + 12, y: yy + 12 }}
+            key={id}
+            defaultPosition={{ x: xx, y: yy }}
           >
-            <HoverButton>
-              <ProductImg src="./images/img.jpg" />
-              <ProductInfo>
-                <Product name="productName">{selectedProduct[0].name}</Product>
-                <Product>{selectedProduct[0].price}</Product>
-              </ProductInfo>
-              <div>
-                <Select>선택</Select>
-              </div>
-            </HoverButton>
+            <Button id={id} onClick={aboutProduct}>
+              +
+            </Button>
           </Draggable>
-        )}
-      </div>
-    );
-  });
-
-  const [productsListModal, setProductsListModal] = useState(false);
+          {id === Number(targetbutton) && (
+            <Draggable
+              disabled={true}
+              defaultPosition={{ x: xx + 12, y: yy + 12 }}
+            >
+              <HoverButton>
+                <ProductImg src="./images/img.jpg" />
+                <ProductInfo>
+                  <Product name="productName">
+                    {selectedProduct[0].name}
+                  </Product>
+                  <Product>{selectedProduct[0].price}</Product>
+                </ProductInfo>
+                <div>
+                  <Select>선택</Select>
+                </div>
+              </HoverButton>
+            </Draggable>
+          )}
+        </div>
+      );
+    });
 
   const onOffModal = id => {
     if (id !== 'products') {
       setPosition(prev => {
         return {
           ...prev,
-
-          productId: id,
+          product_id: id,
         };
       });
       setProductsListModal(!productsListModal);
     }
   };
 
+  let purchaseProductCount = purchaseProduct ? purchaseProduct.length : 0;
+
   return (
-    <>
-      <ImgTagcontainer id={0} onClick={aboutProduct}>
+    <DraggableContainer>
+      <ImgTagcontainer id={0} onClick={aboutProduct} url={url}>
         {!plusAndSubmit && (
           <Draggable
             bounds="parent"
@@ -158,58 +165,97 @@ const DraggableButtonInCard = () => {
         {productsListModal && (
           <Modal name="products" id="products" onOffModal={onOffModal}>
             <ProductButton title="title">
-              {purchaseProduct === []
+              {purchaseProductCount === 0
                 ? '구매하신 목록이 없습니다 !'
                 : '구매 목록 중 상품을 선택해주세요'}
             </ProductButton>
 
-            {purchaseProduct.map(({ id, thumbnail, name, price }) => {
-              return (
-                <ProductButton onClick={() => onOffModal(id)} key={id}>
-                  <ProductImg src="./images/img.jpg" />
-                  <ProductInfo>
-                    <Product name="productName">{name}</Product>
-                    <Product>{price}원</Product>
-                  </ProductInfo>
-                  <div>
-                    <Select>선택</Select>
-                  </div>
-                </ProductButton>
-              );
-            })}
+            {purchaseProduct &&
+              purchaseProduct.map(({ id, thumbnail, name, price }) => {
+                return (
+                  <ProductButton onClick={() => onOffModal(id)} key={id}>
+                    <ProductImg src={thumbnail} />
+                    <ProductInfo>
+                      <Product name="productName">{name}</Product>
+                      <Product>{price}원</Product>
+                    </ProductInfo>
+                    <div>
+                      <Select>선택</Select>
+                    </div>
+                  </ProductButton>
+                );
+              })}
             <ProductButton name="goBack" onClick={cancelPlusButton}>
               돌아가기
             </ProductButton>
           </Modal>
         )}
       </ImgTagcontainer>
-      {plusAndSubmit ? (
-        <button name="plus" onClick={plusbutton}>
-          추가하기
-        </button>
-      ) : (
-        <button name="sumit" onClick={plusbutton}>
-          등록하기
-        </button>
-      )}
-      {!plusAndSubmit && (
-        <button name="cencel" onClick={cancelPlusButton}>
-          취소하기
-        </button>
-      )}
-      <button name="totalCencel" onClick={cancelPlusButton}>
-        태그 전부 삭제
-      </button>
-    </>
+      <TagButtonBox>
+        {plusAndSubmit ? (
+          <TagButton name="plus" onClick={plusbutton}>
+            추가하기
+          </TagButton>
+        ) : (
+          <TagButton name="sumit" onClick={plusbutton}>
+            등록하기
+          </TagButton>
+        )}
+        {!plusAndSubmit && (
+          <TagButton name="cencel" onClick={cancelPlusButton}>
+            취소하기
+          </TagButton>
+        )}
+        <TagButton name="totalCencel" onClick={cancelPlusButton}>
+          태그 전부 삭제
+        </TagButton>
+      </TagButtonBox>
+    </DraggableContainer>
   );
 };
 
 export default DraggableButtonInCard;
+const TagButtonBox = styled.div`
+  display: flex;
+  padding: 10px;
+`;
+const TagButton = styled.button`
+  margin: 10px;
+  padding: 11px 45px 12px;
+  border-radius: 4px;
+  color: rgb(255, 255, 255);
+  background-color: rgb(53, 197, 240);
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 22px;
+  border: none;
+  cursor: pointer;
+  &:hover {
+    background-color: rgb(100, 200, 255);
+  }
+  &:hover {
+    color: rgb(53, 197, 240);
+  }
+`;
+const DraggableContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 630px;
+  margin-right: 30px;
+  border: 1px dotted #9aa1a7;
+  background: #f6f8fa;
+  font: inherit;
+  border-radius: 5px;
+  cursor: pointer;
+`;
 
 const ImgTagcontainer = styled.div`
   position: relative;
   height: 612px;
   width: 612px;
+  background-image: ${({ url }) => `url(${url})`};
+  background-size: cover;
+  cursor: pointer;
 `;
 
 const ProductButton = styled.button`
@@ -268,10 +314,11 @@ const Select = styled.div`
 `;
 
 const Product = styled.div`
+  font-weight: 700;
   color: #424242;
-  line-height: 19px;
   font-size: ${props => (props.name ? '13px' : '11px')};
   font-weight: ${props => (props.name ? '700' : '400')};
+  line-height: 19px;
 `;
 
 const ProductImg = styled.img`
@@ -281,14 +328,14 @@ const ProductImg = styled.img`
   border: 0.3px solid #35c5f0;
   border-radius: 20px;
 `;
+
 const Button = styled.button`
   position: absolute;
+
   width: 24px;
+  height: 24px;
   color: white;
   border-radius: 50%;
+  border: none;
   background-color: #36c5f1;
-
-  /* &:hover + HoverButton {
-    display: block;
-  } */
 `;

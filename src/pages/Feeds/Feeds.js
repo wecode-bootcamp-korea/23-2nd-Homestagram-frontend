@@ -1,12 +1,17 @@
 import React from 'react';
-// import WriteFeed from '../../component/WriteFeed/WriteFeed';
+import Feed from './Feed/Feed';
 
-const Feeds = () => {
+const Feeds = ({ feedData, getData }) => {
   return (
     <div>
-      Feeds
-      {/* <WriteFeed /> */}
+      {feedData &&
+        feedData.map(feedInfo => {
+          return (
+            <Feed key={feedInfo.id} feedInfo={feedInfo} getData={getData} />
+          );
+        })}
     </div>
   );
 };
+
 export default Feeds;
