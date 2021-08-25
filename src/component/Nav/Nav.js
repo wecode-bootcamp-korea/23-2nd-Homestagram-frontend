@@ -20,7 +20,7 @@ const Nav = () => {
 
   useEffect(() => {
     if (localStorage.getItem('token')) {
-      login(true);
+      setLogin(true);
     }
   }, []);
 
@@ -47,11 +47,11 @@ const Nav = () => {
       scope: 'profile_nickname , account_email',
       persistAccessToken: false,
       success: async function (response) {
-        const res = await axios.post('http://10.58.3.236:8000/users/signin', {
+        const res = await axios.post('http://10.58.0.85:8000/users/signin', {
           access_token: response.access_token,
         });
         localStorage.setItem('token', res.data.token);
-        localStorage.setItem('userId', res.data.userId);
+        localStorage.setItem('userId', res.data.user_id);
         localStorage.setItem('nickname', res.data.nickname);
         localStorage.setItem('email', res.data.email);
         if (!res.data.nickname) {
@@ -82,9 +82,10 @@ const Nav = () => {
       setIsSignup(false);
 
       const options = axios.post(
-        `http://10.58.3.236:8000/users/${userInfo.userId}/nickname`,
+        `http://10.58.0.85:8000/users/${userInfo.userId}/nickname`,
         { nickname: userInfo.nickname }
       );
+      console.log(options);
     }
   };
   return (
