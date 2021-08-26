@@ -39,8 +39,8 @@ const ModalContainer = styled.div`
 
 const myPageModal = css`
   position: absolute;
-  top: 72px;
-  right: 50px;
+  top: 55px;
+  right: 320px;
   width: 200px;
   border: ${({ name }) =>
     name === 'signupTitle' ? '1px sod #424242' : '1px solid #ededed'};

@@ -3,10 +3,9 @@ import { useHistory } from 'react-router';
 import { flexBox } from '../../styles/Mixin';
 import styled from 'styled-components';
 
-const Detailoption = ({ price, option }) => {
+const Detailoption = ({ price, option, product_title, url, productId }) => {
   const history = useHistory();
   const [list, setList] = useState([]);
-
   const changeOption = e => {
     const newValue = e.target.value;
 
@@ -43,12 +42,27 @@ const Detailoption = ({ price, option }) => {
   };
 
   const goToPayment = e => {
-    history.push('/orderpage');
+    if (list.length !== 0) {
+      history.push({
+        pathname: '/orderpage',
+
+        state: {
+          price: price,
+          product_title: product_title,
+          url: url,
+          amount: list[0].amount,
+          color: list[0].color,
+          id: productId,
+        },
+      });
+      console.log(productId);
+    } else {
+      alert('제품을 선택해 주세요!');
+    }
   };
 
   const total =
     list.reduce((acc, crr) => {
-      console.log(list, acc, crr);
       return acc + crr.amount;
     }, 0) * price;
 

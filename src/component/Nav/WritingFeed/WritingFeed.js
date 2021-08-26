@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import DraggableButtonInCard from '../Feed/PostImgtag';
+import DraggableButtonInCard from './PostImgtag';
 
-const WriteFeed = () => {
+const WriteFeed = ({ onOffModal }) => {
   const [content, setContent] = useState('');
   const [file, setFile] = useState(null);
   const [place, setPlace] = useState([]);
@@ -25,8 +25,18 @@ const WriteFeed = () => {
       alert('내용을 모두 입력해주세요!!!');
       return;
     }
-    const tagData = { list: buttonData };
-
+    let tagData;
+    if (buttonData.length !== 0) {
+      let a = '';
+      let b = '';
+      for (let i = 0; i < buttonData.length; i++) {
+        a = `{"xx" : ${buttonData[i].xx}, "yy" : ${buttonData[i].yy},"product_id" : ${buttonData[i].product_id}},`;
+        b += a;
+      }
+      tagData = `{"tags":[${b.slice(0, -1)}]}`;
+    } else {
+      tagData = `{"tags":[]}`;
+    }
     const formData = new FormData();
     formData.append('file', file);
     formData.append('content', content);
@@ -38,9 +48,10 @@ const WriteFeed = () => {
     };
 
     axios
-      .post('http://10.58.6.86:8000/posting', formData, { headers })
+      .post('http://10.58.6.65:8000/posting', formData, { headers })
       .then(response => {
-        console.log(response);
+        onOffModal('write');
+        window.location.reload();
       })
       .catch(err => console.error(err));
   };
@@ -62,7 +73,7 @@ const WriteFeed = () => {
     setPlace(e.target.value);
   };
   return (
-    <div className="wrapper">
+    <Wrapper>
       <Topbar>
         <ContentContainer>
           <li>
@@ -117,11 +128,16 @@ const WriteFeed = () => {
           </ArticleContainer>
         </BottomContents>
       </BottomContainer>
-    </div>
+    </Wrapper>
   );
 };
 
 export default WriteFeed;
+
+const Wrapper = styled.div`
+  background-color: white;
+  padding: 50px;
+`;
 
 const Topbar = styled.div`
   border-top: 1px solid lightgray;
@@ -129,7 +145,7 @@ const Topbar = styled.div`
 `;
 const ContentContainer = styled.ul`
   display: flex;
-  padding-left: 300px;
+  padding-left: 50px;
 `;
 const Content = styled.button`
   width: 100%;
@@ -217,7 +233,7 @@ const SelectSpace = styled.select`
   }
 `;
 const FeedTextArea = styled.textarea`
-  width: 377px;
+  width: 400px;
   height: 145px;
   margin-top: 5px;
   padding-top: 15px;

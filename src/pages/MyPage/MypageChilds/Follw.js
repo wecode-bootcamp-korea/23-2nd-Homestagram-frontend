@@ -1,29 +1,16 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 // import { flexBox } from '../../styles/Mixin';
 
 const Follow = () => {
   const [users, setUsers] = useState([]);
-  // useEffect(() => {
-  //   axios
-  //     .get('./data/follow.json', {
-  //       headers: {
-  //         Authorization:
-  //           'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MX0.n7JGyZWDwRePLO7v6ptohdM7--20g1eIQs-E1Co4hO0',
-  //       },
-  //     })
-  //     .then(res => {
-  //       setUsers(res.data.response);
-  //     });
-  // }, []);
+
   useEffect(() => {
+    const headers = { Authorization: localStorage.getItem('token') };
     axios
-      .get('http://10.58.3.119:8000/users/follow', {
-        headers: {
-          Authorization:
-            'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MX0.n7JGyZWDwRePLO7v6ptohdM7--20g1eIQs-E1Co4hO0',
-        },
+      .get('http://10.58.6.65:8000/users/follow', {
+        headers,
       })
       .then(res => {
         setUsers(res.data.response);

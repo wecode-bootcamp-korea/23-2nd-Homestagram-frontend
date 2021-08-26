@@ -1,6 +1,7 @@
 import React from 'react';
 import Draggable from 'react-draggable';
 import styled from 'styled-components';
+import { useHistory } from 'react-router';
 
 const PostedTag = ({
   id,
@@ -12,7 +13,12 @@ const PostedTag = ({
   stop,
   aboutProduct,
   isClickedTag,
+  product_id,
 }) => {
+  let history = useHistory();
+  const goToDetailPage = () => {
+    history.push(`/detailpage/${product_id}`);
+  };
   return (
     <div onClick={stop}>
       <Draggable disabled={true} key={id} defaultPosition={{ x: xx, y: yy }}>
@@ -25,7 +31,7 @@ const PostedTag = ({
           disabled={true}
           defaultPosition={{ x: Number(xx) + 12, y: Number(yy) + 12 }}
         >
-          <HoverButton>
+          <HoverButton onClick={goToDetailPage}>
             <ProductImg src={thumbnail_url} alt={thumbnail_url} />
             <ProductInfo>
               <Product name="productName">{product_title}</Product>

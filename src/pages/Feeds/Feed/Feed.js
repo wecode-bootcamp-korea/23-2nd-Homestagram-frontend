@@ -1,81 +1,100 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import styled from 'styled-components';
 import FeedName from './FeedName/FeedName';
 import PostedTag from './postedTags/PostedTag';
 import Comment from './Commet/Comment';
-import axios from 'axios';
 
-const Feed = ({ feedInfo }) => {
+const Feed = ({ feedInfo, update, feeduserImg, followListUpdate }) => {
   const {
+    feedUserName,
     feeduserId,
-    feeduserImg,
     content,
     alt,
     src,
+    bookmark,
+    follow,
     designType,
     postedDate,
     tags,
     comment,
     feedId,
-    getData,
   } = feedInfo;
+
   const [isClickedTag, setIsClickedTag] = useState(0);
   const [isShown, setIsShown] = useState(false);
-  const [bookmark, setbookmark] = useState(false);
+  const [isBookmark, setIsBookmark] = useState(false);
+
+  useEffect(() => {
+    setIsBookmark(bookmark);
+  }, []);
+
   const stop = e => {
     e.stopPropagation();
-  };
-  console.log(feedInfo.feedId);
-  // useEffect(() => {
-  //   axios
-  //     .post(`http://10.58.3.119:8000/postings/${feedInfo.feedId}/bookmark`)
-  //     .then(res => {
-  //       console.log(res);
-  //     })
-  //     .catch(err => console.log(err));
-  // }, [bookmark]);
-
-  const clickedBookmark = () => {
-    axios
-      .post(`http://10.58.3.119:8000/postings/${feedInfo.feedId}/bookmark`)
-      .then(res => {
-        setbookmark(prev => !prev);
-      })
-      .catch(err => console.log(err));
   };
 
   const aboutProduct = ({ target }) => {
     setIsClickedTag(target.id);
   };
 
+  const clickedBookmark = () => {
+    if (localStorage.getItem('nickname') !== 'null') {
+      axios({
+        method: 'post',
+        url: `http://10.58.6.65:8000/postings/${feedId}/bookmark`,
+
+        headers: { Authorization: localStorage.getItem('token') },
+      })
+        .then(res => {
+          setIsBookmark(prev => !prev);
+        })
+        .catch(err => console.log(err));
+    } else {
+      alert('로그인 해주세요');
+    }
+  };
   const postedTags =
     tags &&
-    tags.map(({ id, xx, yy, product_title, product_price, thumbnail_url }) => {
-      return (
-        <PostedTag
-          key={id}
-          id={id}
-          xx={xx}
-          yy={yy}
-          product_title={product_title}
-          product_price={product_price}
-          thumbnail_url={thumbnail_url}
-          stop={stop}
-          aboutProduct={aboutProduct}
-          isClickedTag={isClickedTag}
-        ></PostedTag>
-      );
-    });
+    tags.map(
+      ({
+        id,
+        xx,
+        yy,
+        product_title,
+        product_price,
+        thumbnail_url,
+        product_id,
+      }) => {
+        return (
+          <PostedTag
+            key={id}
+            id={id}
+            xx={xx}
+            yy={yy}
+            product_id={product_id}
+            product_title={product_title}
+            product_price={product_price}
+            thumbnail_url={thumbnail_url}
+            stop={stop}
+            aboutProduct={aboutProduct}
+            isClickedTag={isClickedTag}
+          ></PostedTag>
+        );
+      }
+    );
 
   return (
     <FeedContainer id={0} onClick={aboutProduct}>
       <FeedName
         feeduserId={feeduserId}
+        feedUserName={feedUserName}
         alt={alt}
-        src={feeduserImg}
+        feeduserImg={feeduserImg}
         postedDate={postedDate}
         designType={designType}
-        getData={getData}
+        update={update}
+        followListUpdate={followListUpdate}
+        follow={follow}
       />
       <FeedImg
         onMouseEnter={() => setIsShown(true)}
@@ -89,7 +108,9 @@ const Feed = ({ feedInfo }) => {
         <Bookmark
           onClick={clickedBookmark}
           src={
-            bookmark ? './images/checked_bookmarks.png' : './images/ribbon.png'
+            isBookmark
+              ? './images/checked_bookmarks.png'
+              : './images/ribbon.png'
           }
         ></Bookmark>
       </ContentAndBookmark>
@@ -97,7 +118,7 @@ const Feed = ({ feedInfo }) => {
         feeduserImg={feeduserImg}
         comment={comment}
         feedId={feedId}
-        getData={getData}
+        update={update}
       />
     </FeedContainer>
   );
@@ -122,7 +143,7 @@ const Content = styled.div`
 const FeedContainer = styled.article`
   display: flex;
   flex-direction: column;
-  width: 614px;
+  width: 630px;
   margin-top: 60px;
   background-color: white;
   border: 1px solid rgba(var(--b6a, 219, 219, 219), 1);
@@ -130,8 +151,8 @@ const FeedContainer = styled.article`
 
 const FeedImg = styled.div`
   position: relative;
-  height: 612px;
-  width: 612px;
+  height: 400px;
+  width: 625px;
   background-image: ${({ url }) => `url(${url})`};
   background-size: 100%;
   cursor: pointer;

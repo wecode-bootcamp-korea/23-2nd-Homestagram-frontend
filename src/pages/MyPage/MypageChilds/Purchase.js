@@ -5,33 +5,18 @@ import styled from 'styled-components';
 const Purchase = () => {
   const [items, setItems] = useState([]);
   useEffect(() => {
+    const headers = { Authorization: localStorage.getItem('token') };
     axios
-      .get('http://10.58.3.119:8000/users/purchase-history', {
-        headers: {
-          Authorization:
-            'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MX0.n7JGyZWDwRePLO7v6ptohdM7--20g1eIQs-E1Co4hO0',
-        },
+      .get('http://10.58.6.65:8000/users/purchase-history', {
+        headers,
       })
       .then(res => {
         setItems(res.data.RESPONSE);
       });
   }, []);
 
-  // useEffect(() => {
-  //   axios
-  //     .get('./data/purchase.json', {
-  //       headers: {
-  //         Authorization:
-  //           'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MX0.n7JGyZWDwRePLO7v6ptohdM7--20g1eIQs-E1Co4hO0',
-  //       },
-  //     })
-  //     .then(res => {
-  //       setItems(res.data.RESPONSE);
-  //     });
-  // }, []);
-
   return (
-    <Fragment>
+    <>
       <PurchaseBox>
         <DateTitle>주문일자</DateTitle>
         <NameTitle>상품명</NameTitle>
@@ -51,7 +36,7 @@ const Purchase = () => {
             </PurchaseList>
           ))}
       </ul>
-    </Fragment>
+    </>
   );
 };
 

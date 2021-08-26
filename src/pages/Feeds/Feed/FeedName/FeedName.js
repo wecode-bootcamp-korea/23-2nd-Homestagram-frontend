@@ -2,35 +2,55 @@ import React from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 
-const FeedName = ({ feeduserId, alt, src, postedDate, getData }) => {
+const FeedName = ({
+  feeduserId,
+  alt,
+  postedDate,
+  follow,
+  update,
+  feedUserName,
+  feeduserImg,
+  followListUpdate,
+}) => {
   const handleFollow = () => {
-    const headers = {
-      Authorization: localStorage.getItem('token'),
-    };
+    if (
+      localStorage.getItem('token') &&
+      localStorage.getItem('nickname') !== 'null'
+    ) {
+      const headers = {
+        Authorization: localStorage.getItem('token'),
+      };
 
-    axios
-      .post(
-        'http://10.58.5.144:8000/users/follow',
-        { nickname: feeduserId },
-        { headers }
-      )
-      .then(response => {
-        getData();
-      })
-      .catch(err => console.error(err));
+      axios
+        .post(
+          'http://10.58.6.65:8000/users/follow',
+          { user_id: feeduserId },
+          { headers }
+        )
+        .then(response => {
+          console.log(response);
+          update();
+          followListUpdate();
+        })
+        .catch(err => console.error(err));
+    } else {
+      alert('로그인이 필요합니다 : )');
+    }
   };
   return (
     <FeedNameContainer>
       <FeedUser>
-        <UserImg alt={alt} src={src} />
+        <UserImg alt={alt} src={feeduserImg} />
         <FeedUserInfo>
-          <p>{feeduserId}</p>
+          <p>{feedUserName}</p>
           <Date>{postedDate}</Date>
         </FeedUserInfo>
       </FeedUser>
-      <Button onClick={handleFollow} follow={false}>
-        {false ? '팔로잉' : '팔로우'}
-      </Button>
+      {localStorage.getItem('nickname') !== feedUserName && (
+        <Button onClick={handleFollow} follow={follow}>
+          {follow ? '팔로잉' : '팔로우'}
+        </Button>
+      )}
     </FeedNameContainer>
   );
 };
@@ -79,8 +99,8 @@ const UserImg = styled.img`
   width: 40px;
   height: 40px;
   border-radius: 100%;
-  background-color: #ededed;
   margin-right: 10px;
+  border: 1px solid gray;
 `;
 
 export default FeedName;
