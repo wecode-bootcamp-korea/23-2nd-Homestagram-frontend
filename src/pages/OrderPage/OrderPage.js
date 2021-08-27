@@ -1,25 +1,15 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
+import { useLocation } from 'react-router';
 import styled from 'styled-components';
 import DaumPostcode from 'react-daum-postcode';
-import axios from 'axios';
 import PaypalButton from './PaypalButton/PaypalButton';
 
 const OrderPage = () => {
   const zonecodeInput = useRef('');
   const addrInput = useRef('');
 
-  const [product, setProduct] = useState([]);
   const [postWindow, setPosWindow] = useState(false);
-
-  useEffect(() => {
-    getData();
-  }, []);
-
-  const getData = () => {
-    axios.get('./data/data.json').then(res => {
-      setProduct(res.data);
-    });
-  };
+  const location = useLocation();
 
   const handleComplete = data => {
     const zonecode = data.zonecode;
@@ -37,7 +27,7 @@ const OrderPage = () => {
     queryTextColor: '#FFFFFF', //검색창 글자색
   };
 
-  const { url, product_title, product_price } = product;
+  const { url, product_title, price, amount, color, id } = location.state;
   return (
     <Wrapper>
       <OrderContainer>
@@ -91,7 +81,7 @@ const OrderPage = () => {
                 <OneProductName>{product_title}</OneProductName>
                 <OneProductOption></OneProductOption>
                 <OneProductPrice>
-                  {Number(product_price).toLocaleString()}원 1개
+                  {Number(price).toLocaleString()}원 {amount}개 option:{color}
                 </OneProductPrice>
               </OneProductInfo>
             </OneProduct>
@@ -105,7 +95,7 @@ const OrderPage = () => {
             <PayInfoKind>
               <PayInfoText>총 상품 금액</PayInfoText>
               <PayInfoPrice>
-                {Number(product_price).toLocaleString()}원
+                {(Number(price) * amount).toLocaleString()}원
               </PayInfoPrice>
             </PayInfoKind>
             <PayInfoKind>
@@ -124,13 +114,13 @@ const OrderPage = () => {
             <AmountPay>
               <TotalPaymentText>최종 결제 금액</TotalPaymentText>
               <TotalPaymentPrice>
-                {Number(product_price).toLocaleString()}원
+                {(Number(price) * amount).toLocaleString()}원
               </TotalPaymentPrice>
             </AmountPay>
           </PayInfo>
           <PayButton>
-            <PaypalButton price={product_price} />
-            {Number(product_price).toLocaleString()}원 결제하기
+            <PaypalButton price={Number(price)} productId={id} />
+            {(Number(price) * amount).toLocaleString()}원 결제하기
           </PayButton>
         </Paybox>
       </Payment>

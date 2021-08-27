@@ -6,16 +6,18 @@ const BookMark = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
+    const headers = { Authorization: localStorage.getItem('token') };
     axios
-      .get(`http://10.58.3.119:8000/bookmarks/list`)
+      .get('http://10.58.6.65:8000/bookmarks/list', { headers })
       .then(res => {
+        console.log(res);
         setData(res.data.LIST);
       })
       .catch(err => console.log(err));
   }, []);
 
   return (
-    <Fragment>
+    <>
       <ImgBox>
         {data.map((user, index) => (
           <ImgList key={index}>
@@ -26,7 +28,7 @@ const BookMark = () => {
           </ImgList>
         ))}
       </ImgBox>
-    </Fragment>
+    </>
   );
 };
 

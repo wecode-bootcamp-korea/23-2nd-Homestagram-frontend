@@ -8,6 +8,8 @@ import axios from 'axios';
 
 const MyPage = () => {
   const [selectedMenu, setSelectedMenu] = useState({ id: 0 });
+  const username = localStorage.getItem('nickname');
+  const email = localStorage.getItem('email');
   const clickedMenu = listId => {
     setSelectedMenu({ id: listId });
   };
@@ -19,7 +21,7 @@ const MyPage = () => {
   ];
 
   return (
-    <Fragment>
+    <>
       <Nav>
         {MENU_LIST.map((menu, index) => {
           return (
@@ -43,7 +45,8 @@ const MyPage = () => {
               src="https://ojsfile.ohmynews.com/STD_IMG_FILE/2010/0809/IE001224096_STD.jpg"
               alt="profile"
             />
-            <NickName>아주 멋있는 닉네임</NickName>
+            <NickName>{username}</NickName>
+            <FollowNumber name="email">{email}</FollowNumber>
             <div>
               <FollowNumber>팔로워</FollowNumber>
               <FollowNumber>팔로잉</FollowNumber>
@@ -62,7 +65,7 @@ const MyPage = () => {
           {selectedMenu.id === 2 && <Purchase />}
         </MainContent>
       </MainBox>
-    </Fragment>
+    </>
   );
 };
 
@@ -119,6 +122,7 @@ const NickName = styled.span`
 
 const FollowNumber = styled.span`
   margin: 0 10px;
+  padding-bottom: ${props => (props.name === 'email' ? '20px' : '')};
 `;
 
 const IconBox = styled.div`

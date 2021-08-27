@@ -1,9 +1,8 @@
 import Detailoption from './Detailoption';
 import styled from 'styled-components';
 
-const DetailInfo = props => {
-  const { product_title, product_price, product_option } = props.data;
-
+const DetailInfo = ({ data, productId }) => {
+  const { product_title, product_price, product_option, url } = data;
   return (
     <InfoWrap>
       <section>
@@ -28,7 +27,13 @@ const DetailInfo = props => {
           <span>3,000원 (50,000원 이상 구매시 무료배송)</span>
         </ExplanationBox>
       </section>
-      <Detailoption price={product_price} option={product_option} />
+      <Detailoption
+        price={product_price}
+        option={product_option}
+        product_title={product_title}
+        url={url}
+        productId={productId}
+      />
     </InfoWrap>
   );
 };

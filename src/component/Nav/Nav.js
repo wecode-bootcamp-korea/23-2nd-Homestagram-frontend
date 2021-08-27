@@ -4,6 +4,7 @@ import axios from 'axios';
 import styled from 'styled-components';
 import { SVG } from '../sgv';
 import Modal from '../Modal/Modal';
+import WriteFeed from './WritingFeed/WritingFeed';
 
 const Nav = () => {
   const { Kakao } = window;
@@ -19,19 +20,23 @@ const Nav = () => {
   });
 
   useEffect(() => {
-    if (localStorage.getItem('token')) {
+    if (
+      localStorage.getItem('token') &&
+      localStorage.getItem('nickname') !== 'null'
+    ) {
       setLogin(true);
     }
   }, []);
 
   const handlelogout = () => {
-    setLogin(!login);
+    setLogin(false);
     setLoginMenu(false);
     setIsSignup(false);
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
     localStorage.removeItem('nickname');
     localStorage.removeItem('email');
+    window.location.replace('/');
   };
 
   const handleSignup = ({ target }) => {
@@ -40,6 +45,7 @@ const Nav = () => {
       return { ...props, nickname: value };
     });
     localStorage.setItem('nickname', value);
+    setLogin(true);
   };
 
   const handlelogin = async () => {
@@ -47,17 +53,20 @@ const Nav = () => {
       scope: 'profile_nickname , account_email',
       persistAccessToken: false,
       success: async function (response) {
-        const res = await axios.post('http://10.58.3.119:8000/users/signin', {
+        const res = await axios.post('http://10.58.6.65:8000/users/signin', {
           access_token: response.access_token,
         });
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('userId', res.data.user_id);
         localStorage.setItem('nickname', res.data.nickname);
         localStorage.setItem('email', res.data.email);
-        if (!res.data.nickname) {
+        console.log(res.data.nickname);
+        if (res.data.nickname == null) {
           setIsSignup(true);
+          console.log('asd');
+        } else {
+          setLogin(true);
         }
-        setLogin(!login);
         setUserInfo({
           userId: res.data.user_id,
           nickname: res.data.nickname,
@@ -77,24 +86,26 @@ const Nav = () => {
     if (name === 'mypage') {
       setLoginMenu(!loginMenu);
     } else if (name === 'write') {
-      setModalWrite(!modalWrite);
+      localStorage.getItem('token') &&
+      localStorage.getItem('nickname') !== 'null'
+        ? setModalWrite(!modalWrite)
+        : alert('로그인 후 이용 부탁합니다');
     }
     if (name === 'signup') {
       setIsSignup(false);
 
       const options = axios.post(
-        `http://10.58.3.119:8000/users/${userInfo.userId}/nickname`,
+        `http://10.58.6.65:8000/users/${userInfo.userId}/nickname`,
         { nickname: userInfo.nickname }
       );
-      console.log(options);
     }
   };
   return (
     <NavContainer>
       <Navcontent>
         <Logo onClick={() => history.push('/')}>
-          <img src="./images/house512.png" alt="homestagramLogo" />
-          Homestagram
+          <img src="./images/house64.png" alt="homestagramLogo" />
+          <span>Homestagram</span>
         </Logo>
         <ButtonBox>
           <Circle>
@@ -119,35 +130,42 @@ const Nav = () => {
               />
               {loginMenu && (
                 <Modal id="mypage" name="mypage" onOffModal={onOffModal}>
-                  <Button>마이페이지</Button>
+                  <Button
+                    onClick={() => {
+                      history.push('/mypage');
+                      setLoginMenu(false);
+                    }}
+                  >
+                    마이페이지
+                  </Button>
                   <Button onClick={handlelogout}>로그아웃</Button>
                 </Modal>
               )}
-              {isSignup && (
-                <Modal id="signup" name="write" onOffModal={onOffModal}>
-                  <Button name="signupTitle" size="18px">
-                    Homestagram 환영합니다
-                  </Button>
-                  <Button
-                    as="input"
-                    size="13px"
-                    placeholder="별명을 입력하세요"
-                    onChange={handleSignup}
-                  />
-                  <Button size="13px" onClick={() => onOffModal('signup')}>
-                    회원가입 하기
-                  </Button>
-                </Modal>
-              )}
-              {SVG.NAV_MYPAGE}
             </Circle>
           )}
+          {isSignup && (
+            <Modal id="signup" name="write" onOffModal={onOffModal}>
+              <Button name="signupTitle" size="18px">
+                Homestagram 환영합니다
+              </Button>
+              <Button
+                as="input"
+                size="13px"
+                placeholder="별명을 입력하세요"
+                onChange={handleSignup}
+              />
+              <Button size="13px" onClick={() => onOffModal('signup')}>
+                회원가입 하기
+              </Button>
+            </Modal>
+          )}
+          {SVG.NAV_MYPAGE}
 
           <WriteButton onClick={() => onOffModal('write')}>글쓰기</WriteButton>
           {SVG.NAV_WRITE}
           {modalWrite && (
             <Modal id="write" name="write" onOffModal={onOffModal}>
-              <WriteComponent></WriteComponent>
+              <WriteFeed onOffModal={onOffModal}></WriteFeed>
             </Modal>
           )}
         </ButtonBox>
@@ -161,6 +179,7 @@ export default Nav;
 const IconStyle = styled.img`
   color: palevioletred;
   font-size: 1em;
+  margin-left: ${props => (props.name === 'kakao' ? '30px' : '')};
   border: ${props => (props.alt === '로그아웃' ? '2px solid black' : 'none')};
 `;
 
@@ -169,6 +188,7 @@ const NavContainer = styled.div`
   justify-content: center;
   background-color: #fff;
   border-bottom: 0.1px solid #ededed;
+
   font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', '맑은 고딕',
     'Malgun Gothic', sans-serif;
 `;
@@ -178,7 +198,7 @@ const Navcontent = styled.div`
   justify-content: space-between;
   padding: 10px 60px;
   margin: 0 auto;
-  max-width: 1256px;
+  max-width: 1800px;
   height: 80px;
 `;
 
@@ -188,8 +208,12 @@ const Logo = styled.button`
   border: none;
   background-color: white;
   img {
-    width: 40px;
-    padding-right: 20px;
+    width: 50px;
+    padding-right: 10px;
+  }
+  span {
+    font-size: 25px;
+    font-weight: bold;
   }
 `;
 
@@ -197,17 +221,16 @@ const ButtonBox = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  width: 600px;
   height: 60px;
-  padding: 10px 0px 10px 300px;
+  padding: 10px 0px 10px 600px;
 `;
 
 const Circle = styled.div`
   display: flex;
   position: ${props => (props.name === 'smile' ? 'relative' : '')};
-  border-radius: 70%;
+  border-radius: 50%;
   align-items: center;
-  margin: 3px;
+  margin-left: 30px;
   &:hover {
     border: 3px solid #32c6f0;
   }
@@ -215,7 +238,7 @@ const Circle = styled.div`
 
 const WriteButton = styled.button`
   padding: 10px;
-  margin-left: 12px;
+  margin-left: 30px;
   border: none;
   border-radius: 5px;
   font-weight: 800;
@@ -224,11 +247,6 @@ const WriteButton = styled.button`
   &:hover {
     background-color: #08addb;
   }
-`;
-const WriteComponent = styled.div`
-  width: 100px;
-  height: 100px;
-  background-color: white;
 `;
 
 const Button = styled.button`

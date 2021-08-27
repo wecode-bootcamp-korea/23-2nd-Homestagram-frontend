@@ -1,14 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import PaypalExpressBtn from 'react-paypal-express-checkout';
+import axios from 'axios';
 
 const PaypalButton = props => {
   let history = useHistory();
+  const { price, productId } = props;
+  console.log(typeof price, typeof productId);
   const onSuccess = payment => {
-    console.log('The payment was succeeded!', payment);
     alert('구매해 주셔서 감사합니다!');
-    history.push('/mypage', 2);
+    const headers = { Authorization: localStorage.getItem('token') };
+    axios
+      .post(
+        'http://10.58.6.65:8000/users/purchase-history',
+        {
+          product_id: Number(productId),
+          price: price,
+          payerID: payment.payerID,
+          paymentID: payment.paymentID,
+          paymentToken: payment.paymentToken,
+        },
+        {
+          headers,
+        }
+      )
+      .then(res => console.log(res));
+    history.push('/mypage');
   };
+
   const onCancel = data => {
     alert('결제가 취소 되었습니다!');
     console.log('The payment was cancelled!', data);
@@ -19,7 +38,7 @@ const PaypalButton = props => {
   };
   let env = 'sandbox';
   let currency = 'USD';
-  let total = props.price / 1000;
+  let total = price / 1000;
 
   const client = {
     sandbox:

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Draggable from 'react-draggable';
-import Modal from '../../../component/Nav/Modal/Modal';
+import Modal from '../Modal/Modal';
 import styled from 'styled-components';
 import axios from 'axios';
 
@@ -25,10 +25,13 @@ const DraggableButtonInCard = ({ url, handleButtonData, buttonData }) => {
   const [productsListModal, setProductsListModal] = useState(false);
 
   useEffect(() => {
+    const headers = {
+      Authorization: localStorage.getItem('token'),
+    };
     axios
-      .get('http://10.58.6.86:8000/products')
+      .get('http://10.58.6.65:8000/users/purchase-history', { headers })
       .then(response => {
-        setPurchaseProduct(response.data.list);
+        setPurchaseProduct(response.data.RESPONSE);
       })
       .catch(err => console.error(err));
   }, []);
@@ -171,20 +174,25 @@ const DraggableButtonInCard = ({ url, handleButtonData, buttonData }) => {
             </ProductButton>
 
             {purchaseProduct &&
-              purchaseProduct.map(({ id, thumbnail, name, price }) => {
-                return (
-                  <ProductButton onClick={() => onOffModal(id)} key={id}>
-                    <ProductImg src={thumbnail} />
-                    <ProductInfo>
-                      <Product name="productName">{name}</Product>
-                      <Product>{price}원</Product>
-                    </ProductInfo>
-                    <div>
-                      <Select>선택</Select>
-                    </div>
-                  </ProductButton>
-                );
-              })}
+              purchaseProduct.map(
+                ({ product_id, product_image, product, price }) => {
+                  return (
+                    <ProductButton
+                      onClick={() => onOffModal(product_id)}
+                      key={product_id}
+                    >
+                      <ProductImg src={product_image} />
+                      <ProductInfo>
+                        <Product name="productName">{product}</Product>
+                        <Product>{price}원</Product>
+                      </ProductInfo>
+                      <div>
+                        <Select>선택</Select>
+                      </div>
+                    </ProductButton>
+                  );
+                }
+              )}
             <ProductButton name="goBack" onClick={cancelPlusButton}>
               돌아가기
             </ProductButton>
@@ -251,10 +259,11 @@ const DraggableContainer = styled.div`
 
 const ImgTagcontainer = styled.div`
   position: relative;
-  height: 612px;
-  width: 612px;
+  height: 400px;
+  width: 630px;
+  border-radius: 5px;
   background-image: ${({ url }) => `url(${url})`};
-  background-size: cover;
+  background-size: 100%;
   cursor: pointer;
 `;
 
